@@ -1,4 +1,6 @@
 import Vapor
+import Fluent
+import FluentMongoDriver
 
 // configures your application
 public func configure(_ app: Application) throws {
@@ -7,4 +9,9 @@ public func configure(_ app: Application) throws {
 
     // register routes
     try routes(app)
+    
+    // mongodb
+    if let key = Environment.get("DB_KEY") {
+        try app.databases.use(.mongo(connectionString: key), as: .mongo)
+    }
 }
