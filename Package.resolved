@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "fluent",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/fluent.git",
+      "state" : {
+        "revision" : "2da106f46b093885f77fa03e3c719ab5bb8cfab4",
+        "version" : "4.6.0"
+      }
+    },
+    {
       "identity" : "fluent-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent-kit.git",
