@@ -14,4 +14,6 @@ public func configure(_ app: Application) throws {
     if let key = Environment.get("DB_KEY") {
         try app.databases.use(.mongo(connectionString: key), as: .mongo)
     }
+    
+    app.migrations.add(CreateExpense())
 }
