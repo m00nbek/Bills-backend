@@ -5,9 +5,10 @@
 //  Created by m00nbek Melikulov on 12/2/22.
 //
 
+import Vapor
 import Fluent
 
-final class Expense: Model {
+final class Expense: Model, Content {
     
     // empty initializer
     init() { }
