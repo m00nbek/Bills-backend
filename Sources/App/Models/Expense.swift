@@ -26,7 +26,7 @@ final class Expense: Model, Content {
     
     // timestamp
     @Field(key: "timestamp")
-    var timestamp: String
+    var timestamp: String?
     
     // cost
     @Field(key: "cost")
@@ -36,7 +36,7 @@ final class Expense: Model, Content {
     @Field(key: "currency")
     var currency: String
     
-    init(id: UUID? = nil, title: String, timestamp: String, cost: Float, currency: String) {
+    init(id: UUID? = nil, title: String, timestamp: String? = nil, cost: Float, currency: String) {
         self.id = id
         self.title = title
         self.timestamp = timestamp
