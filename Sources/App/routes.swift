@@ -9,7 +9,8 @@ func routes(_ app: Application) throws {
     
     // query all the feed items
     app.get("feed") { req async throws in
-        try await Expense.query(on: req.db).all()
+        let items = try await Expense.query(on: req.db).all()
+        return ItemWrapper(items: items)
     }
    
     // create new feed item
