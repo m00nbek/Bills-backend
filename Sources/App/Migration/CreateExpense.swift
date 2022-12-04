@@ -10,7 +10,7 @@ import Fluent
 struct CreateExpense: AsyncMigration {
     // Prepares the database for storing Expense models.
     func prepare(on database: Database) async throws {
-        try await database.schema("feed")
+        try await database.schema("test-feed")
             .id()
             .field("title", .string)
             .field("timestamp", .string)
@@ -21,6 +21,6 @@ struct CreateExpense: AsyncMigration {
 
     // Optionally reverts the changes made in the prepare method.
     func revert(on database: Database) async throws {
-        try await database.schema("feed").delete()
+        try await database.schema("test-feed").delete()
     }
 }
