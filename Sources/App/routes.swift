@@ -18,7 +18,8 @@ func routes(_ app: Application) throws {
         let expense = try req.content.decode(Expense.self)
         
         // setting the timestamp
-        expense.timestamp = Date().ISO8601Format()
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        expense.timestamp = timestamp
         
         return expense.create(on: req.db).map { expense }
     }
