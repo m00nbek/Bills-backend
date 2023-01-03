@@ -8,13 +8,13 @@ func routes(_ app: Application) throws {
     }
     
     // query all the feed items
-    app.get("bills/test-feed") { req async throws in
+    app.get("bills", "test-feed") { req async throws in
         let items = try await Expense.query(on: req.db).all()
         return ItemWrapper(items: items)
     }
    
     // create new feed item
-    app.post("bills/test-feed") { req -> EventLoopFuture<Expense> in
+    app.post("bills", "test-feed") { req -> EventLoopFuture<Expense> in
         let expense = try req.content.decode(Expense.self)
         
         // setting the timestamp
