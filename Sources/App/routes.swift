@@ -3,8 +3,13 @@ import FluentKit
 
 func routes(_ app: Application) throws {
     
+    var routePrefix: PathComponent {
+        let routePrefix = Environment.get("ROUTE_PREFIX") ?? ""
+        return PathComponent(stringLiteral: routePrefix)
+    }
+    
     // MARK: - Group `v1`
-    let v1 = app.grouped("v1")
+    let v1 = app.grouped(routePrefix, "v1")
     
     // home page `/`
     v1.get("") { req async in
