@@ -17,4 +17,5 @@ public func configure(_ app: Application) throws {
     
     
     app.migrations.add(CreateExpense())
+    app.migrations.add(CreateExpenseNote())
 }
