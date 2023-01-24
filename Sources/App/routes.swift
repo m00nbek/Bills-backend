@@ -32,6 +32,14 @@ func routes(_ app: Application) throws {
         return expense
     }
     
+    // get notes for expense with expense id
+    app.get("v1", "expense", ":id", "notes") { req async throws in
+        let id = try getId(from: req)
+        let expense = try await getExpense(for: id, from: req.db)
+        let notes = try await expense.$notes.get(on: req.db)
+        return notes
+    }
+    
     // MARK: - Helpers
     func getExpense(for id: UUID, from db: Database) async throws -> Expense {
         // on `expense` not found, throw `notFound`
