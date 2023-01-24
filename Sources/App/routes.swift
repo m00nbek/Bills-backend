@@ -1,4 +1,5 @@
 import Vapor
+import FluentKit
 
 func routes(_ app: Application) throws {
     
@@ -22,5 +23,31 @@ func routes(_ app: Application) throws {
         expense.timestamp = timestamp
         
         return expense.create(on: req.db).map { expense }
+    }
+    
+    // get expense with id
+    app.get("v1", "expense", ":id") { req async throws in
+        let id = try getId(from: req)
+        let expense = try await getExpense(for: id, from: req.db)
+        return expense
+    }
+    
+    // MARK: - Helpers
+    func getExpense(for id: UUID, from db: Database) async throws -> Expense {
+        // on `expense` not found, throw `notFound`
+        guard let expense = try await Expense.find(id, on: db) else {
+            throw Abort(.notFound)
+        }
+        
+        return expense
+    }
+    
+    func getId(from req: Request) throws -> UUID {
+        // on invalid `id`, throw `badRequest`
+        guard let id = req.parameters.get("id", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        return id
     }
 }
