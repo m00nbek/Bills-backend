@@ -3,6 +3,7 @@ import FluentKit
 
 func routes(_ app: Application) throws {
     
+    // MARK: - Group `v1`
     let v1 = app.grouped("v1")
     
     // home page `/`
@@ -10,14 +11,17 @@ func routes(_ app: Application) throws {
         "Ohayo!"
     }
     
+    // MARK: - Group `feed`
+    let feed = v1.grouped("feed")
+    
     // query all the feed items
-    v1.get("feed") { req async throws in
+    feed.get("") { req async throws in
         let items = try await Expense.query(on: req.db).all()
         return ItemWrapper(items: items)
     }
     
     // create new feed item
-    v1.post("feed") { req -> EventLoopFuture<Expense> in
+    feed.post("") { req -> EventLoopFuture<Expense> in
         let expense = try req.content.decode(Expense.self)
         
         // setting the timestamp
@@ -27,21 +31,24 @@ func routes(_ app: Application) throws {
         return expense.create(on: req.db).map { expense }
     }
     
+    // MARK: - Group `expense`
+    let expense = v1.grouped("expense")
+    
     // get expense with id
-    v1.get("expense", ":id") { req async throws in
+    expense.get(":id") { req async throws in
         let expense = try await getExpense(params: req.parameters, db: req.db)
         return expense
     }
     
     // get notes for expense with expense id
-    v1.get("expense", ":id", "notes") { req async throws in
+    expense.get(":id", "notes") { req async throws in
         let expense = try await getExpense(params: req.parameters, db: req.db)
         let notes = try await expense.$notes.get(on: req.db)
         return notes
     }
     
     // post a note for expense with expense id
-    v1.post("expense", ":id") { req in
+    expense.post(":id") { req in
         let noteMessage = try req.content.decode(Message.self)
         
         let expense = try await getExpense(params: req.parameters, db: req.db)
