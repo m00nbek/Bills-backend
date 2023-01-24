@@ -40,6 +40,19 @@ func routes(_ app: Application) throws {
         return notes
     }
     
+    // post a note for expense with expense id
+    app.post("v1", "expense", ":id") { req in
+        let noteMessage = try req.content.decode(Message.self)
+        
+        let id = try getId(from: req)
+        let expense = try await getExpense(for: id, from: req.db)
+        let expenseNote = ExpenseNote(expenseID: expense.id!, message: noteMessage.message)
+        
+        try await expense.$notes.create(expenseNote, on: req.db)
+
+        return expenseNote
+    }
+    
     // MARK: - Helpers
     func getExpense(for id: UUID, from db: Database) async throws -> Expense {
         // on `expense` not found, throw `notFound`
