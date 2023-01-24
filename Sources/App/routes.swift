@@ -13,7 +13,7 @@ func routes(_ app: Application) throws {
         let items = try await Expense.query(on: req.db).all()
         return ItemWrapper(items: items)
     }
-   
+    
     // create new feed item
     app.post("v1", "feed") { req -> EventLoopFuture<Expense> in
         let expense = try req.content.decode(Expense.self)
@@ -27,15 +27,13 @@ func routes(_ app: Application) throws {
     
     // get expense with id
     app.get("v1", "expense", ":id") { req async throws in
-        let id = try getId(from: req)
-        let expense = try await getExpense(for: id, from: req.db)
+        let expense = try await getExpense(params: req.parameters, db: req.db)
         return expense
     }
     
     // get notes for expense with expense id
     app.get("v1", "expense", ":id", "notes") { req async throws in
-        let id = try getId(from: req)
-        let expense = try await getExpense(for: id, from: req.db)
+        let expense = try await getExpense(params: req.parameters, db: req.db)
         let notes = try await expense.$notes.get(on: req.db)
         return notes
     }
@@ -44,28 +42,35 @@ func routes(_ app: Application) throws {
     app.post("v1", "expense", ":id") { req in
         let noteMessage = try req.content.decode(Message.self)
         
-        let id = try getId(from: req)
-        let expense = try await getExpense(for: id, from: req.db)
+        let expense = try await getExpense(params: req.parameters, db: req.db)
         let expenseNote = ExpenseNote(expenseID: expense.id!, message: noteMessage.message)
         
         try await expense.$notes.create(expenseNote, on: req.db)
-
+        
         return expenseNote
     }
     
     // MARK: - Helpers
-    func getExpense(for id: UUID, from db: Database) async throws -> Expense {
-        // on `expense` not found, throw `notFound`
-        guard let expense = try await Expense.find(id, on: db) else {
-            throw Abort(.notFound)
-        }
+    func getExpense(params: Parameters, db: Database) async throws -> Expense {
+        let id = try getID(from: params)
+        
+        let expense: Expense = try await get(id: id, from: db)
         
         return expense
     }
     
-    func getId(from req: Request) throws -> UUID {
+    func get<Item: Model>(id: Item.IDValue, from db: Database) async throws -> Item {
+        // on `Item` not found, throw `notFound`
+        guard let item = try await Item.find(id, on: db) else {
+            throw Abort(.notFound)
+        }
+        
+        return item
+    }
+    
+    func getID(from param: Parameters) throws -> UUID {
         // on invalid `id`, throw `badRequest`
-        guard let id = req.parameters.get("id", as: UUID.self) else {
+        guard let id = param.get("id", as: UUID.self) else {
             throw Abort(.badRequest)
         }
         
