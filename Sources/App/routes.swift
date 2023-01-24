@@ -3,7 +3,7 @@ import Vapor
 func routes(_ app: Application) throws {
     
     // home page `/`
-    app.get("bills") { req async in
+    app.get("") { req async in
         "Ohayo!"
     }
     
