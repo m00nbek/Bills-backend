@@ -14,7 +14,7 @@ final class Expense: Model, Content {
     init() { }
     
     // Name of the table or collection.
-    static let schema = "feed"
+    static let schema = "test-feed"
 
     // Unique identifier for this Expense.
     @ID(key: .id)
