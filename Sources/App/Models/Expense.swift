@@ -14,7 +14,7 @@ final class Expense: Model, Content {
     init() { }
     
     // Name of the table or collection.
-    static let schema = "test-feed"
+    static let schema = "feed"
 
     // Unique identifier for this Expense.
     @ID(key: .id)
@@ -35,6 +35,10 @@ final class Expense: Model, Content {
     // currency
     @Field(key: "currency")
     var currency: String
+    
+    // notes
+    @Children(for: \.$expense)
+    var notes: [ExpenseNote]
     
     init(id: UUID? = nil, title: String, timestamp: String? = nil, cost: Float, currency: String) {
         self.id = id
