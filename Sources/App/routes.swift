@@ -20,7 +20,7 @@ func routes(_ app: Application) throws {
     let feed = v1.grouped("feed")
     
     // query all the feed items
-    feed.get("") { req async throws in
+    feed.get("all") { req async throws in
         let items = try await Expense.query(on: req.db).all()
         return ItemWrapper(items: items)
     }
