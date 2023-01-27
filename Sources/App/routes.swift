@@ -25,6 +25,39 @@ func routes(_ app: Application) throws {
         return ItemWrapper(items: items)
     }
     
+    // query paginated feed
+    feed.get("") { req in
+        let paginatedRequest = try req.query.decode(PaginatedRequest.self)
+        
+        guard let limit = paginatedRequest.limit else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let afterId = paginatedRequest.afterId else {
+            // first page
+            let firstPage = try await Expense.query(on: req.db).limit(limit).all()
+            return ItemWrapper(items: firstPage)
+        }
+        
+        let allItems = try await Expense.query(on: req.db).all()
+        var offset = 0
+       
+        // get the index of the afterId item
+        for (index, item) in allItems.enumerated() {
+            if item.id == afterId {
+                offset = index
+            }
+        }
+        
+        let query = try await Expense.query(on: req.db)
+            // adding +1 here to get the next item
+            .offset(offset+1)
+            .limit(limit)
+            .all()
+        
+        return ItemWrapper(items: query)
+    }
+    
     // create new feed item
     feed.post("") { req in
         let expenseRequest = try req.content.decode(ExpenseRequest.self)
