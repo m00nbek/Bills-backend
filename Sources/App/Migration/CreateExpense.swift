@@ -13,7 +13,7 @@ struct CreateExpense: AsyncMigration {
         try await database.schema(Expense.schema)
             .id()
             .field("title", .string)
-            .field("timestamp", .string)
+            .field("created_at", .date)
             .field("cost", .float)
             .field("currency", .string)
             .create()
