@@ -36,6 +36,14 @@ final class Expense: Model, Content {
     @Field(key: "currency")
     var currency: String
     
+    // previous
+    @OptionalParent(key: "previous")
+    var previous: Expense?
+    
+    // next
+    @OptionalParent(key: "next")
+    var next: Expense?
+    
     // notes
     @Children(for: \.$expense)
     var notes: [ExpenseNote]
