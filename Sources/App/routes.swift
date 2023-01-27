@@ -26,14 +26,35 @@ func routes(_ app: Application) throws {
     }
     
     // create new feed item
-    feed.post("") { req -> EventLoopFuture<Expense> in
-        let expense = try req.content.decode(Expense.self)
+    feed.post("") { req in
+        let expenseRequest = try req.content.decode(ExpenseRequest.self)
         
-        // setting the timestamp
-        let timestamp = ISO8601DateFormatter().string(from: Date())
-        expense.timestamp = timestamp
+        guard let lastExpense = try await Expense.query(on: req.db).all().last else {
+            return try await createFirstExpense(from: req, on: req.db)
+        }
         
-        return expense.create(on: req.db).map { expense }
+        let newExpense = Expense(id: UUID(), title: expenseRequest.title, cost: expenseRequest.cost, currency: expenseRequest.currency)
+
+        lastExpense.$next.id = newExpense.id
+        newExpense.$previous.id = lastExpense.id
+        newExpense.$next.id = nil
+        
+        try await lastExpense.update(on: req.db)
+        try await newExpense.create(on: req.db)
+        
+        return newExpense
+    }
+    
+    func createFirstExpense(from req: Request, on db: Database) async throws -> Expense {
+        let expenseRequest = try req.content.decode(ExpenseRequest.self)
+        
+        let newExpense = Expense(title: expenseRequest.title, cost: expenseRequest.cost, currency: expenseRequest.currency)
+        newExpense.$previous.id = nil
+        newExpense.$next.id = nil
+        
+        try await newExpense.create(on: db)
+        
+        return newExpense
     }
     
     // MARK: - Group `expense`
