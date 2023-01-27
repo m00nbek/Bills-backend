@@ -45,18 +45,6 @@ func routes(_ app: Application) throws {
         return newExpense
     }
     
-    func createFirstExpense(from req: Request, on db: Database) async throws -> Expense {
-        let expenseRequest = try req.content.decode(ExpenseRequest.self)
-        
-        let newExpense = Expense(title: expenseRequest.title, cost: expenseRequest.cost, currency: expenseRequest.currency)
-        newExpense.$previous.id = nil
-        newExpense.$next.id = nil
-        
-        try await newExpense.create(on: db)
-        
-        return newExpense
-    }
-    
     // MARK: - Group `expense`
     let expense = v1.grouped("expense")
     
@@ -86,6 +74,18 @@ func routes(_ app: Application) throws {
     }
     
     // MARK: - Helpers
+    func createFirstExpense(from req: Request, on db: Database) async throws -> Expense {
+        let expenseRequest = try req.content.decode(ExpenseRequest.self)
+        
+        let newExpense = Expense(title: expenseRequest.title, cost: expenseRequest.cost, currency: expenseRequest.currency)
+        newExpense.$previous.id = nil
+        newExpense.$next.id = nil
+        
+        try await newExpense.create(on: db)
+        
+        return newExpense
+    }
+    
     func getExpense(params: Parameters, db: Database) async throws -> Expense {
         let id = try getID(from: params)
         
