@@ -29,14 +29,11 @@ func routes(_ app: Application) throws {
     feed.get("") { req in
         let paginatedRequest = try req.query.decode(PaginatedRequest.self)
         
-        guard let limit = paginatedRequest.limit else {
-            throw Abort(.badRequest)
-        }
-        
-        guard let afterId = paginatedRequest.afterId else {
+        guard let limit = paginatedRequest.limit,
+              let afterId = paginatedRequest.afterId else {
             // first page
-            let firstPage = try await Expense.query(on: req.db).limit(limit).all()
-            return ItemWrapper(items: firstPage)
+            let items = try await Expense.query(on: req.db).all()
+            return ItemWrapper(items: items)
         }
         
         let allItems = try await Expense.query(on: req.db).all()
