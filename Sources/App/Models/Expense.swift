@@ -14,7 +14,7 @@ final class Expense: Model, Content {
     init() { }
     
     // Name of the table or collection.
-    static let schema = "feed"
+    static let schema = "feedyy"
 
     // Unique identifier for this Expense.
     @ID(key: .id)
@@ -25,7 +25,7 @@ final class Expense: Model, Content {
     var title: String
     
     // createdAt
-    @Timestamp(key: "created_at", on: .create)
+    @Timestamp(key: "created_at", on: .create, format: .iso8601)
     var createdAt: Date?
     
     // cost
