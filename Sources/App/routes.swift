@@ -88,7 +88,7 @@ func routes(_ app: Application) throws {
     expense.get(":id", "notes") { req async throws in
         let expense = try await getExpense(params: req.parameters, db: req.db)
         let notes = try await expense.$notes.get(on: req.db)
-        return notes
+        return ItemWrapper(items: notes)
     }
     
     // post a note for expense with expense id
