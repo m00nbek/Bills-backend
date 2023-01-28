@@ -14,7 +14,10 @@ final class ItemWrapper<Element: Encodable>: AsyncResponseEncodable {
             "items": items
         ]
         
-        let items = try JSONEncoder().encode(json)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        
+        let items = try encoder.encode(json)
         
         return Vapor.Response(body: .init(data: items))
     }
