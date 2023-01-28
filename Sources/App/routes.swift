@@ -32,7 +32,7 @@ func routes(_ app: Application) throws {
         guard let limit = paginatedRequest.limit,
               let afterId = paginatedRequest.afterId else {
             // first page
-            let items = try await Expense.query(on: req.db).limit(8).all()
+            let items = try await Expense.query(on: req.db).limit(10).all()
             return ItemWrapper(items: items)
         }
         
