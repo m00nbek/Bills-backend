@@ -16,6 +16,7 @@ final class ItemWrapper<Element: Encodable>: AsyncResponseEncodable {
         
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
+        encoder.keyEncodingStrategy = .convertToSnakeCase
         
         let items = try encoder.encode(json)
         
